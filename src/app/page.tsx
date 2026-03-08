@@ -11,7 +11,7 @@ function Hero() {
     <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden">
       {/* Background image */}
       <Image
-        src="/building.jpg"
+        src="/sunshine"
         alt=""
         fill
         priority
