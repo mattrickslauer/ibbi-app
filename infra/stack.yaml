@@ -2,7 +2,8 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: >
   ibbichile.com — Iglesia Bíblica Bautista Internacional. A Next.js static export on a
   private S3 bucket behind CloudFront; www redirects to the apex. Nothing runs at request
-  time, so an idle month costs the Route 53 zone and little else.
+  time, so an idle month costs next to nothing. DNS is Namecheap BasicDNS: an ALIAS at
+  the apex and a www CNAME to the distribution, plus the two ACM validation CNAMEs.
 
 Parameters:
   CertificateArn:
@@ -34,15 +35,6 @@ Conditions:
   HasCert: !Not [!Equals [!Ref CertificateArn, '']]
 
 Resources:
-
-  # DNS lives here so every record is scriptable. The registrar (Namecheap) only holds
-  # the four nameservers from the HostedZoneNameServers output.
-  HostedZone:
-    Type: AWS::Route53::HostedZone
-    Properties:
-      Name: !Ref DomainName
-      HostedZoneConfig:
-        Comment: !Sub '${AWS::StackName} — managed by CloudFormation'
 
   # ── Static site bucket. Private; reachable only through CloudFront via OAC. ──────────
   SiteBucket:
@@ -184,41 +176,6 @@ Resources:
             ResponsePagePath: /404.html
             ErrorCachingMinTTL: 60
 
-  # Apex and www both alias the distribution; only once it carries the certificate,
-  # since CloudFront refuses a hostname it has no cert for.
-  ApexA:
-    Type: AWS::Route53::RecordSet
-    Condition: HasCert
-    Properties:
-      HostedZoneId: !Ref HostedZone
-      Name: !Ref DomainName
-      Type: A
-      AliasTarget: { DNSName: !GetAtt Distribution.DomainName, HostedZoneId: Z2FDTNDATAQYW2 }
-  ApexAAAA:
-    Type: AWS::Route53::RecordSet
-    Condition: HasCert
-    Properties:
-      HostedZoneId: !Ref HostedZone
-      Name: !Ref DomainName
-      Type: AAAA
-      AliasTarget: { DNSName: !GetAtt Distribution.DomainName, HostedZoneId: Z2FDTNDATAQYW2 }
-  WwwA:
-    Type: AWS::Route53::RecordSet
-    Condition: HasCert
-    Properties:
-      HostedZoneId: !Ref HostedZone
-      Name: !Sub 'www.${DomainName}'
-      Type: A
-      AliasTarget: { DNSName: !GetAtt Distribution.DomainName, HostedZoneId: Z2FDTNDATAQYW2 }
-  WwwAAAA:
-    Type: AWS::Route53::RecordSet
-    Condition: HasCert
-    Properties:
-      HostedZoneId: !Ref HostedZone
-      Name: !Sub 'www.${DomainName}'
-      Type: AAAA
-      AliasTarget: { DNSName: !GetAtt Distribution.DomainName, HostedZoneId: Z2FDTNDATAQYW2 }
-
   # ── CI deploy role. GitHub Actions assumes this via OIDC, so no long-lived AWS keys
   # live in the repo. Deliberately cannot touch infrastructure: it publishes files, but
   # cannot create roles, edit the stack, or reconfigure the distribution. ──────────────
@@ -280,11 +237,6 @@ Resources:
                 Resource: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
 
 Outputs:
-  HostedZoneId:
-    Value: !Ref HostedZone
-  HostedZoneNameServers:
-    Description: Set these as the domain's nameservers at the registrar.
-    Value: !Join [', ', !GetAtt HostedZone.NameServers]
   GitHubDeployRoleArn:
     Value: !GetAtt GitHubDeployRole.Arn
   DistributionId:
