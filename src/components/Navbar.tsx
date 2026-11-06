@@ -23,7 +23,11 @@ const subMenuES: Record<string, { label: string; href: string }[]> = {
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = usePathname();
+  // trailingSlash: true makes the browser path "/home/", so drop the trailing slash
+  // before comparing against routes.
+  const rawPathname = usePathname();
+  const pathname =
+    rawPathname.length > 1 ? rawPathname.replace(/\/+$/, "") : rawPathname;
   const isHome = pathname === "/" || pathname === "/home";
 
   useEffect(() => {
