@@ -4,27 +4,25 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-
-const linksES = [
-  { label: "Inicio", href: "/" },
-  { label: "Antes de Visitar", href: "/antes-de-visitar" },
-  { label: "Quiénes Somos", href: "/quienes-somos" },
-  { label: "Ministerios", href: "/ministerios" },
-  { label: "Contacto", href: "/contacto" },
-];
-
-const subMenuES: Record<string, { label: string; href: string }[]> = {
-  "/quienes-somos": [
-    { label: "Nuestras Creencias", href: "/quienes-somos#creencias" },
-    { label: "Pastor y Esposa", href: "/pastor-y-equipo" },
-  ],
-};
+import {
+  isEnglish,
+  navEN,
+  navES,
+  normalizePath,
+  otherLanguage,
+  subMenuEN,
+  subMenuES,
+} from "./i18n";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const pathname = usePathname();
+  const pathname = normalizePath(usePathname());
   const isHome = pathname === "/" || pathname === "/home";
+  const en = isEnglish(pathname);
+  const links = en ? navEN : navES;
+  const subMenu = en ? subMenuEN : subMenuES;
+  const switchHref = otherLanguage(pathname);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
@@ -35,6 +33,10 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    document.documentElement.lang = en ? "en" : "es";
+  }, [en]);
 
   const heroPage = isHome && !scrolled;
 
@@ -48,7 +50,7 @@ export default function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href={en ? "/home" : "/"} className="flex items-center gap-3 group">
           <Image
             src="/logo.png"
             alt="IBBI Logo"
@@ -69,8 +71,8 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden items-center gap-1 lg:flex">
-          {linksES.map((link) => {
-            const sub = subMenuES[link.href];
+          {links.map((link) => {
+            const sub = subMenu[link.href];
             const isActive = pathname === link.href;
             return (
               <div key={link.href} className="relative group">
@@ -109,14 +111,14 @@ export default function Navbar() {
 
           {/* Language toggle */}
           <Link
-            href={pathname === "/home" ? "/" : "/home"}
+            href={switchHref}
             className={`ml-4 rounded-full border px-4 py-1.5 text-xs font-semibold uppercase tracking-widest transition-all duration-300 ${
               heroPage
                 ? "border-white/20 text-cream-light/70 hover:border-white/40 hover:text-white"
                 : "border-forest/10 text-stone-light hover:border-forest/30 hover:text-forest"
             }`}
           >
-            {pathname === "/home" ? "ES" : "EN"}
+            {en ? "ES" : "EN"}
           </Link>
         </div>
 
@@ -162,7 +164,7 @@ export default function Navbar() {
         } ${heroPage ? "" : "bg-white/95 backdrop-blur-lg"}`}
       >
         <div className="flex flex-col items-center gap-1 px-6">
-          {linksES.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -177,24 +179,24 @@ export default function Navbar() {
           ))}
           {/* Sub links */}
           <Link
-            href="/pastor-y-equipo"
+            href={en ? "/en/pastor-and-wife" : "/pastor-y-equipo"}
             className={`w-full rounded-lg py-3 text-center text-sm font-medium uppercase tracking-wider transition-colors ${
               heroPage
                 ? "text-cream-light/60 hover:bg-white/10 hover:text-white"
                 : "text-stone-light hover:bg-cream hover:text-forest"
             }`}
           >
-            Pastor y Esposa
+            {en ? "Pastor and Wife" : "Pastor y Esposa"}
           </Link>
           <Link
-            href={pathname === "/home" ? "/" : "/home"}
+            href={switchHref}
             className={`mt-2 w-full rounded-lg border py-3 text-center text-xs font-semibold uppercase tracking-widest transition-colors ${
               heroPage
                 ? "border-white/20 text-cream-light/70"
                 : "border-forest/10 text-stone-light"
             }`}
           >
-            {pathname === "/home" ? "Español" : "English"}
+            {en ? "Español" : "English"}
           </Link>
         </div>
       </div>

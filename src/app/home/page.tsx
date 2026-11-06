@@ -169,7 +169,7 @@ function CTACards() {
 
         <div className="grid gap-8 md:grid-cols-2">
           <RevealSection className="delay-200">
-            <Link href="/antes-de-visitar" className="card-lift group relative block overflow-hidden rounded-3xl bg-forest p-10 sm:p-12">
+            <Link href="/en/before-you-visit" className="card-lift group relative block overflow-hidden rounded-3xl bg-forest p-10 sm:p-12">
               <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-sage/10 blur-[80px] transition-all duration-700 group-hover:bg-sage/20" />
               <div className="relative">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
@@ -192,7 +192,7 @@ function CTACards() {
           </RevealSection>
 
           <RevealSection className="delay-400">
-            <Link href="/pastor-y-equipo" className="card-lift group relative block overflow-hidden rounded-3xl border border-forest/8 bg-white p-10 sm:p-12">
+            <Link href="/en/pastor-and-wife" className="card-lift group relative block overflow-hidden rounded-3xl border border-forest/8 bg-white p-10 sm:p-12">
               <div className="pointer-events-none absolute top-0 right-0 h-64 w-64 rounded-full bg-forest/5 blur-[80px] transition-all duration-700 group-hover:bg-forest/10" />
               <div className="relative">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-forest/5">

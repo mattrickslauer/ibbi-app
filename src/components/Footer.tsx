@@ -1,14 +1,26 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { isEnglish, navEN, navES, normalizePath } from "./i18n";
 
 export default function Footer() {
+  const en = isEnglish(normalizePath(usePathname()));
+  const links = [
+    ...(en ? navEN : navES).map((l) => [l.label, l.href]),
+    en
+      ? ["Pastor and Wife", "/en/pastor-and-wife"]
+      : ["Pastor y Esposa", "/pastor-y-equipo"],
+  ];
+
   return (
     <footer className="relative bg-forest py-20">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid gap-12 md:grid-cols-3">
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-3">
+            <Link href={en ? "/home" : "/"} className="flex items-center gap-3">
               <Image
                 src="/logo.png"
                 alt="IBBI"
@@ -21,25 +33,19 @@ export default function Footer() {
               </span>
             </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-sage-light/50">
-              Iglesia Bíblica Bautista Internacional — Una comunidad de fe en
-              Punta Arenas, Patagonia, Chile.
+              {en
+                ? "Iglesia Bíblica Bautista Internacional — A community of faith in Punta Arenas, Patagonia, Chile."
+                : "Iglesia Bíblica Bautista Internacional — Una comunidad de fe en Punta Arenas, Patagonia, Chile."}
             </p>
           </div>
 
           {/* Links */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-sage">
-              Navegación
+              {en ? "Navigation" : "Navegación"}
             </h4>
             <ul className="mt-4 space-y-3">
-              {[
-                ["Inicio", "/"],
-                ["Antes de Visitar", "/antes-de-visitar"],
-                ["Quiénes Somos", "/quienes-somos"],
-                ["Ministerios", "/ministerios"],
-                ["Contacto", "/contacto"],
-                ["Pastor y Esposa", "/pastor-y-equipo"],
-              ].map(([label, href]) => (
+              {links.map(([label, href]) => (
                 <li key={href}>
                   <Link
                     href={href}
@@ -55,7 +61,7 @@ export default function Footer() {
           {/* Contact & Social */}
           <div>
             <h4 className="text-xs font-semibold uppercase tracking-[0.2em] text-sage">
-              Contacto
+              {en ? "Contact" : "Contacto"}
             </h4>
             <p className="mt-4 text-sm leading-relaxed text-sage-light/50">
               21 de Mayo 1531
@@ -117,8 +123,8 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 sm:flex-row">
           <p className="text-xs text-sage-light/30">
-            &copy; 2026 Iglesia Bíblica Bautista Internacional. Todos los
-            derechos reservados.
+            &copy; 2026 Iglesia Bíblica Bautista Internacional.{" "}
+            {en ? "All rights reserved." : "Todos los derechos reservados."}
           </p>
         </div>
       </div>
